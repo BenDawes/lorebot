@@ -51,7 +51,6 @@ const reloadLore = () => {
 	unsentHashes = _.difference(hashes, sentHashes);
 	shuffleArray(unsentHashes);
 	sentHashes = _.difference(sentHashes, hashes);
-	console.info(hashToInfo);
 }
 
 const saveState = () => {
@@ -102,9 +101,12 @@ const reloadState = () => {
 reloadLore();
 fs.watchFile(LORE_FILE_NAME, (curr, prev) => {
 	if (curr.mtime > prev.mtime) {
+		// Lore is updated
+		saveState();
 		reloadLore();
+		saveState();
 	}
-})
+});
 
 const sendHash = async (hash) => {
 	sentHashes.push(hash);
@@ -130,14 +132,6 @@ const postLore = async () => {
 	saveState();
 };
 
-
-fs.watchFile(LORE_FILE_NAME, (curr, prev) => {
-	if (curr.mtime > prev.mtime) {
-		// Lore is updated
-		reloadLore();
-		saveState();
-	}
-});
 
 bot.login(TOKEN);
 
